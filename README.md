@@ -1,82 +1,67 @@
-# Optimal Portfolio Allocation and Simulation
+# MMA 823 - Optimal Portfolio Allocation & Simulation
 
 ## Project Overview
-This repository contains an analysis of optimal portfolio allocation and simulation for a war-resistant investment strategy. The project is divided into two main parts:
-1. **Optimal Portfolio Allocation:** Constructing a portfolio optimized for a war scenario using ETFs.
-2. **Portfolio Simulation:** Simulating portfolio performance using Geometric Brownian Motion (GBM).
+This project focuses on **constructing an optimal portfolio** with ETFs that perform well in a **war-risk scenario**. The portfolio is optimized by minimizing volatility and later simulated using **Geometric Brownian Motion (GBM)** to evaluate future risk and return.
 
 ---
 ## Part 1: Optimal Portfolio Allocation
 
-### **Objective**
-Construct a portfolio that minimizes volatility while adhering to the following constraints:
-- Use the following ETFs:
+### Objective
+- Construct a portfolio using **historical data from Dec-2018 to Dec-2021**.
+- **Minimize portfolio volatility** while ensuring:
+  - Each ETF has a minimum weight of **1%**.
+  - No ETF has more than **40%** allocation.
+- Use **five ETFs**:
   - **IAU**: iShares Gold Trust ETF
   - **VDE**: Vanguard Energy ETF
   - **XLB**: Materials Sector SPDR ETF
   - **DBC**: Invesco DB Commodity Index Tracking Fund
   - **CQQQ**: China Technology Index ETF
-- **Constraints:**
-  - Each ETF weight must be **≥ 1%**.
-  - No ETF can exceed **40%** weight.
-- **Optimization Goal:** Minimize portfolio volatility using historical variance-covariance data.
-- **Historical Data Period:** Dec-2018 to Dec-2021.
 
-### **Findings**
-#### **1. Average Monthly Returns**
-| Ticker | Average Monthly Return |
-|--------|------------------------|
-| CQQQ   | 0.015903               |
-| DBC    | 0.015297               |
-| IAU    | 0.010587               |
-| VDE    | 0.111318               |
-| XLB    | 0.019979               |
+### Implementation
+1. **Data Collection**: Retrieved **monthly close prices** of the selected ETFs using `yfinance`.
+2. **Returns & Risk Metrics**:
+   - Computed **average returns**, **variance**, and **covariance matrix**.
+   - Applied **Ordinary Least Squares (OLS)** regression for **CAPM Beta Estimation**.
+3. **Portfolio Optimization**:
+   - Used **Scipy optimization** to find the optimal weights minimizing portfolio volatility.
+   - Ensured weight constraints were met.
+4. **Performance Evaluation**:
+   - Compared portfolio performance **vs. S&P 500 (Jan-2022 onwards)**.
+   - Calculated **cumulative return, annualized return, and annualized volatility**.
 
-- **VDE (0.111318)** has the highest return.
-- **IAU (0.010587)** has the lowest return.
+### Key Findings
+| Ticker | Avg. Monthly Return | Variance | Beta  |
+|--------|--------------------|---------|------|
+| CQQQ   | 1.59%              | 0.00581  | 1.28 |
+| DBC    | 1.53%              | 0.00529  | 0.87 |
+| IAU    | 1.06%              | 0.00183  | 0.34 |
+| VDE    | **11.13%**         | **0.0153** | 1.67 |
+| XLB    | 1.99%              | 0.00834  | 1.12 |
 
-#### **2. Variance (Risk)**
-| Ticker | Variance |
-|--------|---------|
-| CQQQ   | 0.005813 |
-| DBC    | 0.005295 |
-| IAU    | 0.001826 |
-| VDE    | 0.015297 |
-| XLB    | 0.008336 |
-
-- **VDE (0.015297)** is the most volatile.
-- **IAU (0.001826)** is the least volatile.
-
-#### **3. Beta Estimation (CAPM Model)**
-- Beta values measure sensitivity to market movements.
-- Using OLS regression, we estimated the beta for each ETF.
-
-#### **4. Portfolio Optimization**
-- Applied constraints to minimize portfolio volatility.
-- **Generated optimal ETF weight allocation** (see pie chart in results).
-
-#### **5. Performance Evaluation (Jan-2022 Onwards)**
-- Compared portfolio returns against the S&P 500.
-- **Key performance metrics:**
-  - **Cumulative return**
-  - **Annualized return**
-  - **Annualized volatility**
+- **VDE** had the **highest return** but also the **highest risk**.
+- **IAU** had the **lowest volatility**, making it a stable hedge asset.
+- **Optimal portfolio weights** were found and visualized in a pie chart.
 
 ---
 ## Part 2: Portfolio Simulation
 
-### **Objective**
-Simulate the optimized portfolio's performance using **Geometric Brownian Motion (GBM)** to assess potential future returns and risks.
+### Objective
+- Use **Geometric Brownian Motion (GBM)** to simulate the portfolio’s future performance.
+- **Forecast period**: **Jan-2023 to Jan-2025**.
+- **Simulations**: 1000 Monte Carlo paths with **weekly time steps**.
 
-### **Implementation Steps**
-1. **Computed the variance-covariance matrix from Dec-2018 to Dec-2021.**
-2. **Simulated portfolio performance using GBM with Cholesky Decomposition.**
-3. **Simulation Parameters:**
-   - **Simulation Period:** Jan-2023 to Jan-2025
-   - **Frequency:** Weekly
-   - **Paths:** 1000
-   - **Initial Portfolio Value:** 100
-4. **Generated a histogram of simulated end values.**
-5. **Compared actual performance to simulated scenarios.**
-   - Analyzed whether actual returns were a tail event within the simulated distribution. (see chart in script).
+### Implementation
+1. **Constructed the variance-covariance matrix**.
+2. **Applied Cholesky decomposition** to model correlated asset movements.
+3. **Generated 1000 simulated paths** to predict potential future outcomes.
+4. **Analyzed simulation results**:
+   - Created a **histogram of simulated end values**.
+   - Compared **actual portfolio performance vs. simulated range**.
+   - Identified whether actual returns were a **tail event** in the simulated distributions.
+
+### Key Insights
+- **Expected portfolio value** at the end of **2025** falls between **95 and 135**.
+- **Extreme tail events** were observed where **portfolio values dropped below 85**.
+- **Actual performance in 2023-2024** was compared to simulated projection
 
